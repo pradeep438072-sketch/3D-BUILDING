@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}Register - 3D Building Visualization System{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-md-5">
+    <div class="card card-custom p-4 shadow">
+      <h3 class="fw-bold mb-3 text-center"><i class="bi bi-person-plus me-2 text-info"></i>Register Account</h3>
+      <form method="POST">
+        <div class="mb-3">
+          <label class="form-label">Username</label>
+          <input type="text" name="username" class="form-control bg-dark text-light border-secondary" required>
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Email</label>
+          <input type="email" name="email" class="form-control bg-dark text-light border-secondary" required>
+        </div>
+        <div class="mb-4">
+          <label class="form-label">Password</label>
+          <input type="password" name="password" class="form-control bg-dark text-light border-secondary" required>
+        </div>
+        <button type="submit" class="btn btn-cyan w-100 py-2">Create Account</button>
+      </form>
+      <div class="text-center mt-3 text-secondary small">
+        Already registered? <a href="{{ url_for('login') }}" class="text-info">Sign in here</a>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,7 @@
+{
+  "name": "3D Building Visualizer",
+  "description": "Interactive 3D building visualization system to plan, customize rooms, configure floors, and explore architectural models.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
+
