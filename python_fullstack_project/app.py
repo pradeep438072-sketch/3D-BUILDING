@@ -2,6 +2,12 @@ import os
 import sys
 import json
 import logging
+
+# Ensure base directory is in sys.path before any local imports
+BASE_DIR = os.path.abspath(os.path.dirname(__file__))
+if BASE_DIR not in sys.path:
+    sys.path.insert(0, BASE_DIR)
+
 from flask import Flask, render_template, request, redirect, url_for, flash, jsonify
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
@@ -12,9 +18,9 @@ logging.basicConfig(level=logging.INFO, stream=sys.stderr)
 logger = logging.getLogger(__name__)
 
 # Base directory path resolution for robust template & static discovery
-BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 TEMPLATES_DIR = os.path.join(BASE_DIR, 'templates')
 STATIC_DIR = os.path.join(BASE_DIR, 'static')
+
 
 app = Flask(
     __name__,
