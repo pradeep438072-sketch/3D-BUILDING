@@ -3,7 +3,7 @@ import sys
 import json
 import logging
 
-# Ensure base directory is in sys.path before any local imports
+# 1. Ensure project directory is in sys.path before local imports
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 if BASE_DIR not in sys.path:
     sys.path.insert(0, BASE_DIR)
@@ -17,10 +17,9 @@ from models import db, User, Building
 logging.basicConfig(level=logging.INFO, stream=sys.stderr)
 logger = logging.getLogger(__name__)
 
-# Base directory path resolution for robust template & static discovery
+# Base directory path resolution for templates & static assets
 TEMPLATES_DIR = os.path.join(BASE_DIR, 'templates')
 STATIC_DIR = os.path.join(BASE_DIR, 'static')
-
 
 app = Flask(
     __name__,
@@ -32,10 +31,7 @@ app = Flask(
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'architect-dev-secret-key-2026')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
-# Database Path Resolution:
-# Vercel serverless containers are strictly read-only except for /tmp.
-# If DATABASE_URL is provided, use it (PostgreSQL / Neon / Supabase).
-# Otherwise, on Vercel use /tmp/building_system.db, and locally use ./building_system.db.
+# 2. Database Path: Use /tmp on Vercel (read-only filesystem workaround)
 database_url = os.environ.get('DATABASE_URL')
 if database_url:
     if database_url.startswith('postgres://'):
@@ -105,7 +101,7 @@ def get_default_sample_plan():
         ]
     }
 
-# Safe, Resilient Database Initialization
+# 3. Resilient Database Initialization
 _db_initialized = False
 
 def ensure_db_initialized():
@@ -121,7 +117,10 @@ def ensure_db_initialized():
                     password_hash=generate_password_hash('demo123')
                 )
                 db.session.add(demo_user)
-                db.session.commit()
+                try:
+                    db.session.commit()
+                except Exception:
+                    db.session.rollback()
 
                 sample = Building(
                     user_id=demo_user.id,
@@ -137,10 +136,14 @@ def ensure_db_initialized():
                     data_json=json.dumps(get_default_sample_plan())
                 )
                 db.session.add(sample)
-                db.session.commit()
+                try:
+                    db.session.commit()
+                except Exception:
+                    db.session.rollback()
             _db_initialized = True
             logger.info("Database initialized successfully.")
         except Exception as e:
+            db.session.rollback()
             logger.error(f"Database initialization warning: {e}", exc_info=True)
 
 @app.before_request
@@ -154,11 +157,11 @@ def health_check():
     return jsonify({
         "status": "healthy",
         "environment": "vercel" if os.environ.get('VERCEL') else "standard",
-        "database_uri_prefix": app.config['SQLALCHEMY_DATABASE_URI'].split('///')[0] if '///' in app.config['SQLALCHEMY_DATABASE_URI'] else "external",
+        "database": app.config['SQLALCHEMY_DATABASE_URI'].split('///')[0] if '///' in app.config['SQLALCHEMY_DATABASE_URI'] else "external",
         "db_initialized": _db_initialized
     })
 
-# Routes
+# Main Routes
 @app.route('/')
 def index():
     return render_template('index.html')
@@ -168,12 +171,17 @@ def login():
     if request.method == 'POST':
         username = request.form.get('username', '').strip()
         password = request.form.get('password', '')
-        user = User.query.filter_by(username=username).first()
-        if user and check_password_hash(user.password_hash, password):
-            login_user(user)
-            flash('Successfully logged in!', 'success')
-            return redirect(url_for('dashboard'))
-        flash('Invalid username or password', 'danger')
+        try:
+            user = User.query.filter_by(username=username).first()
+            if user and check_password_hash(user.password_hash, password):
+                login_user(user)
+                flash('Successfully logged in!', 'success')
+                return redirect(url_for('dashboard'))
+            flash('Invalid username or password', 'danger')
+        except Exception as e:
+            db.session.rollback()
+            logger.error(f"Login error: {e}")
+            flash('Database error during login. Please retry.', 'danger')
     return render_template('login.html')
 
 @app.route('/register', methods=['GET', 'POST'])
@@ -187,20 +195,25 @@ def register():
             flash('All fields are required', 'warning')
             return redirect(url_for('register'))
 
-        if User.query.filter((User.username == username) | (User.email == email)).first():
-            flash('Username or Email already exists', 'warning')
-            return redirect(url_for('register'))
+        try:
+            if User.query.filter((User.username == username) | (User.email == email)).first():
+                flash('Username or Email already exists', 'warning')
+                return redirect(url_for('register'))
 
-        new_user = User(
-            username=username,
-            email=email,
-            password_hash=generate_password_hash(password)
-        )
-        db.session.add(new_user)
-        db.session.commit()
-        login_user(new_user)
-        flash('Registration successful! Welcome!', 'success')
-        return redirect(url_for('dashboard'))
+            new_user = User(
+                username=username,
+                email=email,
+                password_hash=generate_password_hash(password)
+            )
+            db.session.add(new_user)
+            db.session.commit()
+            login_user(new_user)
+            flash('Registration successful! Welcome!', 'success')
+            return redirect(url_for('dashboard'))
+        except Exception as e:
+            db.session.rollback()
+            logger.error(f"Registration error: {e}")
+            flash('Could not create account: ' + str(e), 'danger')
     return render_template('register.html')
 
 @app.route('/logout')
@@ -213,7 +226,12 @@ def logout():
 @app.route('/dashboard')
 @login_required
 def dashboard():
-    buildings = Building.query.filter_by(user_id=current_user.id).order_by(Building.updated_at.desc()).all()
+    try:
+        buildings = Building.query.filter_by(user_id=current_user.id).order_by(Building.updated_at.desc()).all()
+    except Exception as e:
+        db.session.rollback()
+        logger.error(f"Dashboard query error: {e}")
+        buildings = []
     return render_template('dashboard.html', buildings=buildings)
 
 @app.route('/plan/new', methods=['GET', 'POST'])
@@ -239,22 +257,28 @@ def new_plan():
         sample_plan['plotLength'] = length
         sample_plan['roofStyle'] = roof
 
-        b = Building(
-            user_id=current_user.id,
-            name=name,
-            building_type=b_type,
-            plot_width=width,
-            plot_length=length,
-            total_area=width * length,
-            floor_count=floors,
-            roof_style=roof,
-            building_style=style,
-            data_json=json.dumps(sample_plan)
-        )
-        db.session.add(b)
-        db.session.commit()
-        flash('Building plan generated successfully!', 'success')
-        return redirect(url_for('visualization', building_id=b.id))
+        try:
+            b = Building(
+                user_id=current_user.id,
+                name=name,
+                building_type=b_type,
+                plot_width=width,
+                plot_length=length,
+                total_area=width * length,
+                floor_count=floors,
+                roof_style=roof,
+                building_style=style,
+                data_json=json.dumps(sample_plan)
+            )
+            db.session.add(b)
+            db.session.commit()
+            flash('Building plan generated successfully!', 'success')
+            return redirect(url_for('visualization', building_id=b.id))
+        except Exception as e:
+            db.session.rollback()
+            logger.error(f"Plan creation error: {e}")
+            flash('Error creating plan: ' + str(e), 'danger')
+
     return render_template('plan_input.html')
 
 @app.route('/visualize/<int:building_id>')
@@ -263,7 +287,7 @@ def visualization(building_id):
     building = Building.query.get_or_404(building_id)
     return render_template('visualization.html', building=building)
 
-# REST APIs for Three.js and AJAX
+# REST APIs for Three.js
 @app.route('/api/building/<int:building_id>', methods=['GET'])
 def get_building_api(building_id):
     building = Building.query.get_or_404(building_id)
@@ -276,13 +300,18 @@ def update_building_api(building_id):
     if building.user_id != current_user.id:
         return jsonify({'error': 'Unauthorized'}), 403
 
-    payload = request.get_json(silent=True) or {}
-    if 'name' in payload:
-        building.name = payload['name']
-    if 'data' in payload:
-        building.data_json = json.dumps(payload['data'])
-    db.session.commit()
-    return jsonify({'status': 'success', 'message': 'Building saved'})
+    try:
+        payload = request.get_json(silent=True) or {}
+        if 'name' in payload:
+            building.name = payload['name']
+        if 'data' in payload:
+            building.data_json = json.dumps(payload['data'])
+        db.session.commit()
+        return jsonify({'status': 'success', 'message': 'Building saved'})
+    except Exception as e:
+        db.session.rollback()
+        logger.error(f"API update error: {e}")
+        return jsonify({'error': str(e)}), 500
 
 @app.route('/report/<int:building_id>')
 @login_required
@@ -290,7 +319,7 @@ def report_page(building_id):
     building = Building.query.get_or_404(building_id)
     return render_template('report.html', building=building)
 
-# Error Handlers to prevent opaque 500 error pages
+# Error Handlers
 @app.errorhandler(404)
 def not_found_error(error):
     return render_template('404.html'), 404
@@ -300,7 +329,5 @@ def internal_server_error(error):
     logger.error(f"Internal 500 Error: {error}", exc_info=True)
     return render_template('500.html', error=str(error)), 500
 
-# Vercel entry point variable
-# WSGI servers look for `app`
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5000)
