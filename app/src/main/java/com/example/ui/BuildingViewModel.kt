@@ -52,6 +52,17 @@ class BuildingViewModel(application: Application) : AndroidViewModel(application
     private val _userMessage = MutableSharedFlow<String>()
     val userMessage: SharedFlow<String> = _userMessage.asSharedFlow()
 
+    private val _isDarkTheme = MutableStateFlow(false) // Default to Clean Studio Light theme for max visibility
+    val isDarkTheme: StateFlow<Boolean> = _isDarkTheme.asStateFlow()
+
+    fun toggleTheme() {
+        _isDarkTheme.value = !_isDarkTheme.value
+    }
+
+    fun setDarkTheme(dark: Boolean) {
+        _isDarkTheme.value = dark
+    }
+
     private val _exportedObjContent = MutableStateFlow<String?>(null)
     val exportedObjContent: StateFlow<String?> = _exportedObjContent.asStateFlow()
 

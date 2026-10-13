@@ -90,7 +90,8 @@ fun PlanInputScreen(
                 Text(
                     text = "Building Plan & Requirements",
                     style = MaterialTheme.typography.headlineSmall,
-                    fontWeight = FontWeight.Bold
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onBackground
                 )
                 Text(
                     text = "Configure building dimensions, floors, style, and architectural parameters",
@@ -108,7 +109,7 @@ fun PlanInputScreen(
                 colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
             ) {
                 Column(modifier = Modifier.padding(16.dp)) {
-                    Text(text = "Project Name", fontWeight = FontWeight.Bold)
+                    Text(text = "Project Name", fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurface)
                     Spacer(modifier = Modifier.height(8.dp))
                     OutlinedTextField(
                         value = name,
@@ -131,7 +132,7 @@ fun PlanInputScreen(
                 colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
             ) {
                 Column(modifier = Modifier.padding(16.dp)) {
-                    Text(text = "Building Type", fontWeight = FontWeight.Bold)
+                    Text(text = "Building Type", fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurface)
                     Spacer(modifier = Modifier.height(10.dp))
                     Row(
                         modifier = Modifier.fillMaxWidth(),
@@ -176,7 +177,7 @@ fun PlanInputScreen(
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Text(text = "Plot Dimensions", fontWeight = FontWeight.Bold)
+                        Text(text = "Plot Dimensions", fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurface)
                         Surface(
                             shape = RoundedCornerShape(8.dp),
                             color = MaterialTheme.colorScheme.primary.copy(alpha = 0.15f)
@@ -193,7 +194,7 @@ fun PlanInputScreen(
 
                     Spacer(modifier = Modifier.height(14.dp))
 
-                    Text(text = "Width: ${plotWidth.toInt()} meters", style = MaterialTheme.typography.bodyMedium)
+                    Text(text = "Width: ${plotWidth.toInt()} meters", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurface)
                     Slider(
                         value = plotWidth,
                         onValueChange = { plotWidth = it },
@@ -205,7 +206,7 @@ fun PlanInputScreen(
 
                     Spacer(modifier = Modifier.height(8.dp))
 
-                    Text(text = "Length: ${plotLength.toInt()} meters", style = MaterialTheme.typography.bodyMedium)
+                    Text(text = "Length: ${plotLength.toInt()} meters", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurface)
                     Slider(
                         value = plotLength,
                         onValueChange = { plotLength = it },
@@ -231,7 +232,7 @@ fun PlanInputScreen(
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Text(text = "Number of Floors", fontWeight = FontWeight.Bold)
+                        Text(text = "Number of Floors", fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurface)
                         Text(
                             text = "$floorCount Floors",
                             fontWeight = FontWeight.Bold,
@@ -268,7 +269,7 @@ fun PlanInputScreen(
                 colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
             ) {
                 Column(modifier = Modifier.padding(16.dp)) {
-                    Text(text = "Roof Style", fontWeight = FontWeight.Bold)
+                    Text(text = "Roof Style", fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurface)
                     Spacer(modifier = Modifier.height(8.dp))
                     Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                         FilterChip(
@@ -286,7 +287,7 @@ fun PlanInputScreen(
                     }
 
                     Spacer(modifier = Modifier.height(12.dp))
-                    Text(text = "Building Style", fontWeight = FontWeight.Bold)
+                    Text(text = "Building Style", fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurface)
                     Spacer(modifier = Modifier.height(8.dp))
                     Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                         for (style in listOf("Modern Minimalist", "Glass Facade", "Classic Stone")) {

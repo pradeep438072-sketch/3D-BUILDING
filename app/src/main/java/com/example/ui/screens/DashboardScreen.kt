@@ -108,7 +108,8 @@ fun DashboardScreen(
                             Text(
                                 text = currentPlan.name,
                                 style = MaterialTheme.typography.titleLarge,
-                                fontWeight = FontWeight.Bold
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.onSurface
                             )
                             Text(
                                 text = "Type: ${currentPlan.type} • Style: ${currentPlan.buildingStyle}",
@@ -167,7 +168,8 @@ fun DashboardScreen(
             Text(
                 text = "Key Metrics",
                 style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.SemiBold
+                fontWeight = FontWeight.SemiBold,
+                color = MaterialTheme.colorScheme.onBackground
             )
             Spacer(modifier = Modifier.height(8.dp))
             Row(
@@ -224,7 +226,8 @@ fun DashboardScreen(
             Text(
                 text = "Room Distribution",
                 style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.SemiBold
+                fontWeight = FontWeight.SemiBold,
+                color = MaterialTheme.colorScheme.onBackground
             )
             Spacer(modifier = Modifier.height(8.dp))
             Card(
@@ -253,12 +256,14 @@ fun DashboardScreen(
                 Text(
                     text = "Recent Projects",
                     style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.SemiBold
+                    fontWeight = FontWeight.SemiBold,
+                    color = MaterialTheme.colorScheme.onBackground
                 )
                 Text(
                     text = "View All (${recentProjects.size})",
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.primary,
+                    fontWeight = FontWeight.SemiBold,
                     modifier = Modifier
                         .clickable { onNavigate(AppScreen.SAVED_PROJECTS) }
                         .testTag("dashboard_view_all_projects")
@@ -305,7 +310,7 @@ fun DashboardScreen(
                         }
                         Spacer(modifier = Modifier.width(12.dp))
                         Column(modifier = Modifier.weight(1f)) {
-                            Text(text = project.name, fontWeight = FontWeight.Bold)
+                            Text(text = project.name, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurface)
                             Text(
                                 text = "${project.type} • ${project.totalArea.toInt()} m² • ${project.floors.flatMap { it.rooms }.size} rooms",
                                 style = MaterialTheme.typography.bodySmall,
@@ -345,7 +350,8 @@ fun MetricStatCard(
             Text(
                 text = value,
                 style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.onSurface
             )
             Text(
                 text = title,
@@ -371,7 +377,7 @@ fun RoomDistRow(label: String, count: Int, icon: ImageVector) {
                 modifier = Modifier.size(18.dp)
             )
             Spacer(modifier = Modifier.width(8.dp))
-            Text(text = label, style = MaterialTheme.typography.bodyMedium)
+            Text(text = label, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurface)
         }
         Text(
             text = "$count",

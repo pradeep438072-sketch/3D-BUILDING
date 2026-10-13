@@ -91,7 +91,8 @@ fun AuthScreen(
                 Text(
                     text = "Architect Portal",
                     style = MaterialTheme.typography.headlineSmall,
-                    fontWeight = FontWeight.Bold
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onBackground
                 )
                 Text(
                     text = "Manage your 3D building models, designs & client exports",
@@ -126,7 +127,7 @@ fun AuthScreen(
                             }
                             Spacer(modifier = Modifier.width(14.dp))
                             Column {
-                                Text(text = activeUser.fullName, fontWeight = FontWeight.Bold, style = MaterialTheme.typography.titleMedium)
+                                Text(text = activeUser.fullName, fontWeight = FontWeight.Bold, style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.onSurface)
                                 Text(text = activeUser.email, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                                 Text(text = "@${activeUser.username}", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.primary)
                             }

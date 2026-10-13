@@ -118,7 +118,8 @@ fun ReportDownloadScreen(
                 Text(
                     text = "Project Report & 3D Export",
                     style = MaterialTheme.typography.headlineSmall,
-                    fontWeight = FontWeight.Bold
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onBackground
                 )
                 Text(
                     text = "Download architectural summaries, dimension schedules and export 3D OBJ models",
@@ -145,7 +146,8 @@ fun ReportDownloadScreen(
                             Text(
                                 text = currentPlan.name,
                                 style = MaterialTheme.typography.titleLarge,
-                                fontWeight = FontWeight.Bold
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.onSurface
                             )
                             Text(
                                 text = "Architectural Specifications Summary",
@@ -256,7 +258,8 @@ fun ReportDownloadScreen(
                             Text(
                                 text = "3D Model Export (.OBJ Format)",
                                 style = MaterialTheme.typography.titleMedium,
-                                fontWeight = FontWeight.Bold
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.onSurface
                             )
                             Text(
                                 text = "Compatible with Blender, AutoCAD, Revit, 3ds Max",
@@ -357,6 +360,6 @@ fun SpecRow(label: String, value: String) {
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         Text(text = label, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
-        Text(text = value, style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Bold)
+        Text(text = value, style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurface)
     }
 }

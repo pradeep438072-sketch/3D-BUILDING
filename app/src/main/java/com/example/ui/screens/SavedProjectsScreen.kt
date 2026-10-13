@@ -93,7 +93,8 @@ fun SavedProjectsScreen(
                     Text(
                         text = "Saved Building Projects",
                         style = MaterialTheme.typography.headlineSmall,
-                        fontWeight = FontWeight.Bold
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onBackground
                     )
                     Text(
                         text = "${projects.size} Architectures in Database",
@@ -150,7 +151,8 @@ fun SavedProjectsScreen(
                         Text(
                             text = "No Projects Found",
                             style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.Bold
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.onSurface
                         )
                         Text(
                             text = "Create a new building plan to visualize and save it in 3D.",
@@ -198,7 +200,8 @@ fun SavedProjectsScreen(
                                     Text(
                                         text = project.name,
                                         style = MaterialTheme.typography.titleMedium,
-                                        fontWeight = FontWeight.Bold
+                                        fontWeight = FontWeight.Bold,
+                                        color = MaterialTheme.colorScheme.onSurface
                                     )
                                     Text(
                                         text = "${project.type} • $dateStr",

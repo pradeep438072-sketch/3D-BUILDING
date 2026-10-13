@@ -58,6 +58,9 @@ import com.example.ui.screens.SavedProjectsScreen
 import com.example.ui.screens.VisualizationScreen
 import com.example.ui.theme.MyApplicationTheme
 
+import androidx.compose.material.icons.filled.DarkMode
+import androidx.compose.material.icons.filled.LightMode
+
 class MainActivity : ComponentActivity() {
 
     private val viewModel: BuildingViewModel by viewModels()
@@ -66,8 +69,9 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            MyApplicationTheme {
-                MainApp(viewModel = viewModel)
+            val isDarkTheme by viewModel.isDarkTheme.collectAsStateWithLifecycle()
+            MyApplicationTheme(darkTheme = isDarkTheme) {
+                MainApp(viewModel = viewModel, isDarkTheme = isDarkTheme)
             }
         }
     }
@@ -75,7 +79,7 @@ class MainActivity : ComponentActivity() {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MainApp(viewModel: BuildingViewModel) {
+fun MainApp(viewModel: BuildingViewModel, isDarkTheme: Boolean) {
     val currentScreen by viewModel.currentScreen.collectAsStateWithLifecycle()
     val currentPlan by viewModel.currentPlan.collectAsStateWithLifecycle()
     val savedProjects by viewModel.savedProjects.collectAsStateWithLifecycle()
@@ -108,6 +112,8 @@ fun MainApp(viewModel: BuildingViewModel) {
         modifier = Modifier
             .fillMaxSize()
             .windowInsetsPadding(WindowInsets.safeDrawing),
+        containerColor = MaterialTheme.colorScheme.background,
+        contentColor = MaterialTheme.colorScheme.onBackground,
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
         topBar = {
             if (!isTopLevelScreen) {
@@ -121,14 +127,28 @@ fun MainApp(viewModel: BuildingViewModel) {
                                 AppScreen.AUTH -> "Architect Account"
                                 else -> "Building Visualizer"
                             },
-                            fontWeight = FontWeight.Bold
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.onBackground
                         )
                     },
                     navigationIcon = {
                         IconButton(onClick = { viewModel.handleBack() }) {
                             Icon(
                                 imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                                contentDescription = "Back"
+                                contentDescription = "Back",
+                                tint = MaterialTheme.colorScheme.onBackground
+                            )
+                        }
+                    },
+                    actions = {
+                        IconButton(
+                            onClick = { viewModel.toggleTheme() },
+                            modifier = Modifier.testTag("top_bar_theme_toggle")
+                        ) {
+                            Icon(
+                                imageVector = if (isDarkTheme) Icons.Default.LightMode else Icons.Default.DarkMode,
+                                contentDescription = "Toggle Theme",
+                                tint = MaterialTheme.colorScheme.primary
                             )
                         }
                     },
@@ -206,6 +226,8 @@ fun MainApp(viewModel: BuildingViewModel) {
                     AppScreen.HOME -> HomeScreen(
                         currentPlan = currentPlan,
                         activeUser = activeUser,
+                        isDarkTheme = isDarkTheme,
+                        onToggleTheme = { viewModel.toggleTheme() },
                         onNavigate = { viewModel.navigateTo(it) },
                         onLoadSample = { viewModel.setPlan(it) }
                     )

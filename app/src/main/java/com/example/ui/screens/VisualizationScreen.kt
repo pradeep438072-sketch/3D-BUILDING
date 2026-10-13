@@ -49,6 +49,8 @@ import com.example.data.model.BuildingPlan
 import com.example.ui.AppScreen
 import com.example.ui.components.BuildingWebView
 
+import androidx.compose.material.icons.filled.Palette
+
 @Composable
 fun VisualizationScreen(
     buildingPlan: BuildingPlan,
@@ -85,7 +87,7 @@ fun VisualizationScreen(
                 .padding(top = 8.dp, start = 12.dp, end = 12.dp)
                 .align(Alignment.TopCenter),
             shape = RoundedCornerShape(20.dp),
-            color = MaterialTheme.colorScheme.surface.copy(alpha = 0.92f),
+            color = MaterialTheme.colorScheme.surface.copy(alpha = 0.95f),
             shadowElevation = 6.dp
         ) {
             Row(
@@ -95,11 +97,12 @@ fun VisualizationScreen(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Column {
+                Column(modifier = Modifier.weight(1f)) {
                     Text(
                         text = buildingPlan.name,
                         style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Bold
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onSurface
                     )
                     Text(
                         text = "${buildingPlan.floorCount} Floors • ${buildingPlan.type} • 3D Real-Time",
@@ -109,6 +112,19 @@ fun VisualizationScreen(
                 }
 
                 Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                    IconButton(
+                        onClick = {
+                            webViewRef?.evaluateJavascript("window.cycleBackground && window.cycleBackground();", null)
+                        },
+                        modifier = Modifier.testTag("btn_cycle_background")
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Palette,
+                            contentDescription = "Change 3D Background Color",
+                            tint = MaterialTheme.colorScheme.primary
+                        )
+                    }
+
                     IconButton(
                         onClick = {
                             isCutawayActive = !isCutawayActive

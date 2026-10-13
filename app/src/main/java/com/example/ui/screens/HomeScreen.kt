@@ -50,10 +50,15 @@ import com.example.data.local.UserEntity
 import com.example.data.model.BuildingPlan
 import com.example.ui.AppScreen
 
+import androidx.compose.material.icons.filled.DarkMode
+import androidx.compose.material.icons.filled.LightMode
+
 @Composable
 fun HomeScreen(
     currentPlan: BuildingPlan,
     activeUser: UserEntity?,
+    isDarkTheme: Boolean = false,
+    onToggleTheme: () -> Unit = {},
     onNavigate: (AppScreen) -> Unit,
     onLoadSample: (BuildingPlan) -> Unit,
     modifier: Modifier = Modifier
@@ -72,7 +77,7 @@ fun HomeScreen(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Column {
+                Column(modifier = Modifier.weight(1f)) {
                     Text(
                         text = "3D Building Visualizer",
                         style = MaterialTheme.typography.headlineSmall,
@@ -85,16 +90,29 @@ fun HomeScreen(
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
-                IconButton(
-                    onClick = { onNavigate(AppScreen.AUTH) },
-                    modifier = Modifier.testTag("auth_button")
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.AccountCircle,
-                        contentDescription = "User Account",
-                        tint = MaterialTheme.colorScheme.primary,
-                        modifier = Modifier.size(32.dp)
-                    )
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    IconButton(
+                        onClick = onToggleTheme,
+                        modifier = Modifier.testTag("btn_theme_toggle_home")
+                    ) {
+                        Icon(
+                            imageVector = if (isDarkTheme) Icons.Default.LightMode else Icons.Default.DarkMode,
+                            contentDescription = "Toggle Background Theme",
+                            tint = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.size(26.dp)
+                        )
+                    }
+                    IconButton(
+                        onClick = { onNavigate(AppScreen.AUTH) },
+                        modifier = Modifier.testTag("auth_button")
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.AccountCircle,
+                            contentDescription = "User Account",
+                            tint = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.size(30.dp)
+                        )
+                    }
                 }
             }
         }
@@ -145,7 +163,8 @@ fun HomeScreen(
                                 Text(
                                     text = "Active: ${currentPlan.name}",
                                     style = MaterialTheme.typography.titleMedium,
-                                    fontWeight = FontWeight.Bold
+                                    fontWeight = FontWeight.Bold,
+                                    color = MaterialTheme.colorScheme.onSurface
                                 )
                                 Text(
                                     text = "${currentPlan.floorCount} Floors • ${currentPlan.type} • ${currentPlan.totalArea.toInt()} m²",
@@ -385,7 +404,8 @@ fun ArchitectureSampleCard(
                     Text(
                         text = title,
                         style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Bold
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onSurface
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                     Surface(

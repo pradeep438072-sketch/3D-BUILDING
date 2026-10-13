@@ -88,7 +88,8 @@ fun FloorConfigScreen(
                 Text(
                     text = "Floor & Room Configuration",
                     style = MaterialTheme.typography.headlineSmall,
-                    fontWeight = FontWeight.Bold
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onBackground
                 )
                 Text(
                     text = "Customize room layouts, names, dimensions and types per floor",
@@ -141,7 +142,8 @@ fun FloorConfigScreen(
                             Text(
                                 text = activeFloor.name,
                                 style = MaterialTheme.typography.titleMedium,
-                                fontWeight = FontWeight.Bold
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.onSurface
                             )
                             Text(
                                 text = "${activeFloor.rooms.size} Rooms Configured",
@@ -239,7 +241,7 @@ fun RoomConfigCard(
             )
             Spacer(modifier = Modifier.width(12.dp))
             Column(modifier = Modifier.weight(1f)) {
-                Text(text = room.name, fontWeight = FontWeight.Bold, style = MaterialTheme.typography.bodyLarge)
+                Text(text = room.name, fontWeight = FontWeight.Bold, style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.onSurface)
                 Text(
                     text = "${room.type} • ${room.width.toInt()}m × ${room.length.toInt()}m (${(room.width * room.length).toInt()} m²)",
                     style = MaterialTheme.typography.bodySmall,
@@ -285,7 +287,7 @@ fun AddRoomDialog(
 
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text("Add Room to Floor", fontWeight = FontWeight.Bold) },
+        title = { Text("Add Room to Floor", fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurface) },
         text = {
             Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
                 OutlinedTextField(
@@ -326,7 +328,7 @@ fun AddRoomDialog(
                     }
                 }
 
-                Text(text = "Width: ${width.toInt()} meters", style = MaterialTheme.typography.bodySmall)
+                Text(text = "Width: ${width.toInt()} meters", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurface)
                 Slider(
                     value = width,
                     onValueChange = { width = it },
@@ -334,7 +336,7 @@ fun AddRoomDialog(
                     steps = 9
                 )
 
-                Text(text = "Length: ${length.toInt()} meters", style = MaterialTheme.typography.bodySmall)
+                Text(text = "Length: ${length.toInt()} meters", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurface)
                 Slider(
                     value = length,
                     onValueChange = { length = it },

@@ -91,7 +91,8 @@ fun ColorPickerScreen(
                 Text(
                     text = "Room Color Customization",
                     style = MaterialTheme.typography.headlineSmall,
-                    fontWeight = FontWeight.Bold
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onBackground
                 )
                 Text(
                     text = "Assign distinct identifiable colors to each room type in the 3D model",
@@ -133,7 +134,7 @@ fun ColorPickerScreen(
                             )
                             Spacer(modifier = Modifier.width(12.dp))
                             Column {
-                                Text(text = type, fontWeight = FontWeight.Bold, style = MaterialTheme.typography.titleMedium)
+                                Text(text = type, fontWeight = FontWeight.Bold, style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.onSurface)
                                 Text(text = description, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                             }
                         }
@@ -146,6 +147,7 @@ fun ColorPickerScreen(
                                 text = currentColorHex.uppercase(),
                                 fontWeight = FontWeight.Bold,
                                 style = MaterialTheme.typography.labelMedium,
+                                color = MaterialTheme.colorScheme.onSurface,
                                 modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
                             )
                         }
@@ -204,7 +206,7 @@ fun ColorPickerScreen(
                 colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
             ) {
                 Column(modifier = Modifier.padding(16.dp)) {
-                    Text(text = "Custom Hex Color Code", fontWeight = FontWeight.Bold)
+                    Text(text = "Custom Hex Color Code", fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurface)
                     Spacer(modifier = Modifier.height(8.dp))
                     Row(
                         modifier = Modifier.fillMaxWidth(),

@@ -18,12 +18,15 @@ private val DarkColorScheme =
     secondary = BlueprintSecondaryDark,
     onSecondary = Color(0xFF003833),
     tertiary = BlueprintTertiaryDark,
+    onTertiary = Color(0xFF451A03),
     background = SlateBackgroundDark,
     surface = SlateSurfaceDark,
     surfaceVariant = SlateCardDark,
-    onBackground = Color(0xFFF1F5F9),
-    onSurface = Color(0xFFF1F5F9),
-    onSurfaceVariant = Color(0xFFCBD5E1)
+    onBackground = TextPrimaryDark,
+    onSurface = TextPrimaryDark,
+    onSurfaceVariant = TextSecondaryDark,
+    outline = TextMutedDark,
+    outlineVariant = Color(0xFF475569)
   )
 
 private val LightColorScheme =
@@ -33,17 +36,20 @@ private val LightColorScheme =
     secondary = BlueprintSecondary,
     onSecondary = Color.White,
     tertiary = BlueprintTertiary,
+    onTertiary = Color.White,
     background = SlateBackgroundLight,
     surface = SlateSurfaceLight,
     surfaceVariant = SlateCardLight,
-    onBackground = Color(0xFF0F172A),
-    onSurface = Color(0xFF0F172A),
-    onSurfaceVariant = Color(0xFF334155)
+    onBackground = TextPrimaryLight,
+    onSurface = TextPrimaryLight,
+    onSurfaceVariant = TextSecondaryLight,
+    outline = TextMutedLight,
+    outlineVariant = Color(0xFFE2E8F0)
   )
 
 @Composable
 fun MyApplicationTheme(
-  darkTheme: Boolean = isSystemInDarkTheme(),
+  darkTheme: Boolean = false, // Clean, crisp, bright architectural light theme default
   dynamicColor: Boolean = false,
   content: @Composable () -> Unit,
 ) {
