@@ -2,6 +2,8 @@ import os
 import sys
 import json
 import logging
+import urllib.request
+import urllib.error
 
 # 1. Ensure project directory is in sys.path before local imports
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
@@ -30,6 +32,9 @@ app = Flask(
 # Configuration
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'architect-dev-secret-key-2026')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+# Vercel service binding for internal multi-service communication
+BACKEND_URL = os.environ.get('BACKEND_URL')
 
 # 2. Database Path: Use /tmp on Vercel (read-only filesystem workaround)
 database_url = os.environ.get('DATABASE_URL')
@@ -158,7 +163,8 @@ def health_check():
         "status": "healthy",
         "environment": "vercel" if os.environ.get('VERCEL') else "standard",
         "database": app.config['SQLALCHEMY_DATABASE_URI'].split('///')[0] if '///' in app.config['SQLALCHEMY_DATABASE_URI'] else "external",
-        "db_initialized": _db_initialized
+        "db_initialized": _db_initialized,
+        "backend_binding": BACKEND_URL or "none"
     })
 
 # Main Routes
@@ -287,21 +293,40 @@ def visualization(building_id):
     building = Building.query.get_or_404(building_id)
     return render_template('visualization.html', building=building)
 
-# REST APIs for Three.js
+# REST APIs for Three.js (with Vercel Service Binding support)
 @app.route('/api/building/<int:building_id>', methods=['GET'])
 def get_building_api(building_id):
+    if BACKEND_URL:
+        try:
+            target_url = f"{BACKEND_URL.rstrip('/')}/api/building/{building_id}"
+            req = urllib.request.Request(target_url, headers={'Content-Type': 'application/json'})
+            with urllib.request.urlopen(req, timeout=5) as response:
+                return jsonify(json.loads(response.read().decode())), response.status
+        except Exception as e:
+            logger.warning(f"Failed to fetch from bound service {BACKEND_URL}: {e}. Falling back to local DB.")
+
     building = Building.query.get_or_404(building_id)
     return jsonify(building.to_dict())
 
 @app.route('/api/building/<int:building_id>/update', methods=['POST'])
 @login_required
 def update_building_api(building_id):
+    payload = request.get_json(silent=True) or {}
+    if BACKEND_URL:
+        try:
+            target_url = f"{BACKEND_URL.rstrip('/')}/api/building/{building_id}/update"
+            req_data = json.dumps(payload).encode('utf-8')
+            req = urllib.request.Request(target_url, data=req_data, headers={'Content-Type': 'application/json'})
+            with urllib.request.urlopen(req, timeout=5) as response:
+                return jsonify(json.loads(response.read().decode())), response.status
+        except Exception as e:
+            logger.warning(f"Failed to post to bound service {BACKEND_URL}: {e}. Falling back to local DB.")
+
     building = Building.query.get_or_404(building_id)
     if building.user_id != current_user.id:
         return jsonify({'error': 'Unauthorized'}), 403
 
     try:
-        payload = request.get_json(silent=True) or {}
         if 'name' in payload:
             building.name = payload['name']
         if 'data' in payload:

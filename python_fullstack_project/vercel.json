@@ -1,8 +1,35 @@
 {
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "services": {
+    "app": {
+      "root": ".",
+      "framework": "flask",
+      "bindings": [
+        {
+          "type": "service",
+          "service": "python_fullstack_project",
+          "format": "url",
+          "env": "BACKEND_URL"
+        }
+      ]
+    },
+    "python_fullstack_project": {
+      "root": "python_fullstack_project",
+      "framework": "flask"
+    }
+  },
   "rewrites": [
     {
+      "source": "/api/(.*)",
+      "destination": {
+        "service": "python_fullstack_project"
+      }
+    },
+    {
       "source": "/(.*)",
-      "destination": "/api/index.py"
+      "destination": {
+        "service": "app"
+      }
     }
   ]
 }
